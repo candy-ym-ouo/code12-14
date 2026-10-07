@@ -1,0 +1,15 @@
+{
+  "name": "@nature/annotator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "照片标注：跨年份同株枝条共用底图、裁剪/缩放坐标还原、多端版本合并",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

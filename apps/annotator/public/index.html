@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>同株枝条跨年标注</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">🌱 同株枝条跨年标注</div>
+      <div class="top-controls">
+        <label>植株
+          <select id="plantSelect"></select>
+        </label>
+        <button id="newPlantBtn" class="btn">＋新植株</button>
+        <label class="me">我是
+          <input id="meInput" maxlength="20" placeholder="你的名字" />
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="card">
+          <h3>年份照片（同一规范底图）</h3>
+          <div id="photoList" class="photo-list"></div>
+          <div class="row">
+            <label class="upload-btn btn">
+              上传新年份照片
+              <input id="uploadInput" type="file" accept="image/*" hidden />
+            </label>
+          </div>
+          <p class="hint">
+            第一张照片自动成为<b>底图</b>。裁剪图通过画布工具栏的 ✂ 生成，
+            其变换矩阵自动级联，坐标可还原到任意年份。
+          </p>
+        </section>
+
+        <section class="card" id="editorCard" hidden>
+          <h3>标注属性</h3>
+          <label>名称 <input id="fLabel" type="text" /></label>
+          <div class="row">
+            <label class="grow">颜色 <input id="fColor" type="color" /></label>
+            <label class="grow">始 <input id="fYearFrom" type="number" /></label>
+            <label class="grow">止 <input id="fYearTo" type="number" placeholder="至今" /></label>
+          </div>
+          <div class="row">
+            <button id="saveMetaBtn" class="btn primary">保存属性</button>
+            <button id="deleteBtn" class="btn danger">删除</button>
+          </div>
+          <div id="annVersion" class="version-line"></div>
+        </section>
+
+        <section class="card">
+          <h3>本株标注</h3>
+          <div id="annList" class="ann-list"></div>
+          <p class="hint">多人编辑同一标注时：改不同字段自动合并；改同一字段弹出裁决。</p>
+        </section>
+      </aside>
+
+      <section class="stage-wrap">
+        <div class="toolbar">
+          <div class="tool-group" id="tools">
+            <button data-tool="pan" class="btn active" title="平移/选择">✋ 选择</button>
+            <button data-tool="point" class="btn" title="点标注">📍 点</button>
+            <button data-tool="rect" class="btn" title="矩形框">▭ 矩形</button>
+            <button data-tool="polygon" class="btn" title="多边形（双击闭合）">▽ 多边形</button>
+            <button data-tool="crop" class="btn" title="框选区域生成裁剪图">✂ 裁剪出新照片</button>
+          </div>
+          <div class="tool-group">
+            <button id="zoomFitBtn" class="btn">适应</button>
+            <button id="zoom100Btn" class="btn">100%</button>
+            <label class="chk"><input type="checkbox" id="showAllYears" checked /> 显示全部年份标注</label>
+          </div>
+        </div>
+        <div id="stage" class="stage">
+          <canvas id="canvas" width="900" height="640"></canvas>
+          <div id="emptyHint" class="empty-hint" hidden>选择或上传一张照片开始标注</div>
+        </div>
+        <div id="statusBar" class="statusbar"></div>
+      </section>
+    </main>
+
+    <!-- 裁剪确认 -->
+    <dialog id="cropDialog">
+      <form method="dialog" class="dlg">
+        <h3>从当前照片裁剪出新照片</h3>
+        <p class="hint">裁剪图会继承底图坐标（仿射矩阵级联），标注在新图上原位显示。</p>
+        <label>年份 <input id="cropYear" type="number" required /></label>
+        <label>备注 <input id="cropNote" type="text" placeholder="可选" /></label>
+        <div class="row end">
+          <button value="cancel" class="btn">取消</button>
+          <button id="cropConfirmBtn" value="confirm" class="btn primary">生成裁剪图</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- 冲突裁决 -->
+    <dialog id="conflictDialog">
+      <div class="dlg">
+        <h3>⚠ 同一字段被多人修改</h3>
+        <p class="hint">
+          你编辑期间 <b id="cfBy"></b> 也修改了同一标注的相同字段。
+          逐字段选择保留谁的值（其余不冲突字段已自动合并）。
+        </p>
+        <div id="cfFields"></div>
+        <div class="row end">
+          <button id="cfMineBtn" class="btn">全部用我的</button>
+          <button id="cfTheirsBtn" class="btn">全部用对方</button>
+          <button id="cfSubmitBtn" class="btn primary">按选择提交</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- 新植株 -->
+    <dialog id="plantDialog">
+      <form method="dialog" class="dlg">
+        <h3>新植株</h3>
+        <label>名称 <input id="npName" type="text" required placeholder="如：院角海棠 A-17" /></label>
+        <label>物种 <input id="npSpecies" type="text" placeholder="可选" /></label>
+        <div class="row end">
+          <button value="cancel" class="btn">取消</button>
+          <button id="npConfirm" value="confirm" class="btn primary">创建</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
