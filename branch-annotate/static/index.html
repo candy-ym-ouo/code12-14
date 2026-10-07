@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>跨年份枝条照片标注</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="title">🌿 跨年份枝条标注 <span class="sub">底图坐标 · 裁剪还原 · 版本合并</span></div>
+  <div class="identity">
+    我是
+    <select id="identity"></select>
+    <button id="btn-demo" title="写入演示枝条（同株三年照片 + 标注）">载入演示数据</button>
+    <span id="branch-name" class="branch-name"></span>
+    <span id="version-badge" class="badge" title="服务端版本号">v0</span>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- 左侧：年份/照片树 -->
+  <aside class="panel left">
+    <div class="panel-h">照片（同株）</div>
+    <div id="photo-list" class="photo-list"></div>
+    <div class="panel-h">对齐与裁剪</div>
+    <div class="btn-row">
+      <button id="btn-align">控制点对齐…</button>
+      <button id="btn-crop">裁剪模式</button>
+    </div>
+    <div id="crop-hint" class="hint hidden">在图上拖出裁剪框（裁剪图相对父图记录 frame）</div>
+    <div class="panel-h">视图</div>
+    <div class="btn-row">
+      <button id="btn-zoom-in">放大</button>
+      <button id="btn-zoom-out">缩小</button>
+      <button id="btn-fit">适应窗口</button>
+    </div>
+    <div class="hint">滚轮缩放（以光标为锚）· 空格/中键拖动平移 · 缩放平移不会改动标注坐标</div>
+    <div class="panel-h">并发演示</div>
+    <div class="btn-row">
+      <button id="btn-demo-concurrent-diff" title="模拟两个客户端同时编辑同一标注的不同字段">并发改不同字段</button>
+      <button id="btn-demo-concurrent-same" title="模拟两个客户端同时改同一字段，产生冲突">并发改同一字段</button>
+    </div>
+  </aside>
+
+  <!-- 中间：画布 -->
+  <section class="stage">
+    <div class="tabs" id="year-tabs"></div>
+    <canvas id="canvas"></canvas>
+    <div id="toast" class="toast hidden"></div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <!-- 右侧：标注列表 + 属性 + 冲突 -->
+  <aside class="panel right">
+    <div class="panel-h">工具</div>
+    <div class="tools">
+      <button data-tool="select" class="tool active">选择/拖动</button>
+      <button data-tool="point" class="tool">点</button>
+      <button data-tool="rect" class="tool">矩形</button>
+      <button data-tool="polygon" class="tool">多边形</button>
+    </div>
+    <div id="draw-hint" class="hint"></div>
+
+    <div class="panel-h">标注（存底图坐标）<span id="anno-count" class="count"></span></div>
+    <div id="anno-list" class="anno-list"></div>
+
+    <div class="panel-h">属性</div>
+    <div id="props" class="props">未选中</div>
+
+    <div class="panel-h conflict-h">冲突 <span id="conflict-count"></span></div>
+    <div id="conflict-list" class="conflict-list"></div>
+  </aside>
+</main>
+
+<!-- 对齐对话框 -->
+<dialog id="align-dlg">
+  <div class="dlg-h">控制点对齐（3 对→仿射，≥4 对→单应）</div>
+  <div class="dlg-body">
+    <div class="dlg-col">
+      <div class="dlg-col-h">底图（父）<span id="align-src-info"></span></div>
+      <canvas id="align-src" class="align-canvas"></canvas>
+    </div>
+    <div class="dlg-col">
+      <div class="dlg-col-h">本图（子）<span id="align-dst-info"></span></div>
+      <canvas id="align-dst" class="align-canvas"></canvas>
+    </div>
+  </div>
+  <div class="dlg-actions">
+    <span id="align-rms" class="hint"></span>
+    <button id="align-addpair" class="minor">在两张图同位置各点一下（添加点对）</button>
+    <button id="align-clear" class="minor">清空点对</button>
+    <button id="align-cancel" class="minor">取消</button>
+    <button id="align-apply" class="primary">计算并应用 frame</button>
+  </div>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
